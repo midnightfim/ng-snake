@@ -1,13 +1,13 @@
-import {Component, DestroyRef, inject, OnInit} from '@angular/core';
-import {BestScoreManager} from './app.storage.service';
-import {BOARD_SIZE, COLORS, CONTROLS, GameModesEnum} from './app.constants';
-import {fromEvent} from "rxjs";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { BestScoreManager } from './app.storage.service';
+import { BOARD_SIZE, COLORS, CONTROLS, GameModesEnum } from './app.constants';
+import { fromEvent } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
   private readonly destroy: DestroyRef = inject(DestroyRef);
@@ -19,7 +19,7 @@ export class AppComponent implements OnInit {
 
   public GameModesEnum = GameModesEnum;
   public board: boolean[][] = [];
-  public obstacles: {x: number, y: number}[] = [];
+  public obstacles: { x: number, y: number }[] = [];
   public score = 0;
   public showMenuChecker = false;
   public gameStarted = false;
@@ -43,7 +43,8 @@ export class AppComponent implements OnInit {
 
   constructor(
     private bestScoreService: BestScoreManager
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     this.setBoard();
@@ -51,8 +52,8 @@ export class AppComponent implements OnInit {
     fromEvent<KeyboardEvent>(document, 'keydown').pipe(
       takeUntilDestroyed(this.destroy)
     ).subscribe(($event: KeyboardEvent) => {
-      this.handleKeyboardEvents($event)
-    })
+      this.handleKeyboardEvents($event);
+    });
   }
 
   handleKeyboardEvents(e: KeyboardEvent) {
