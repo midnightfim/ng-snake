@@ -4,24 +4,24 @@
   position: relative;
 }
 
-.game-header>.score-block {
+.game-header > .score-block {
   display: inline-block;
 }
 
-.score-block>.score {
+.score-block > .score {
   position: absolute;
   right: 8px;
   top: -5px;
 }
 
-.score-block>.best-score {
+.score-block > .best-score {
   position: absolute;
   right: 8px;
   margin-top: 5px;
   font-size: 12px;
 }
 
-.game-header>.logo {
+.game-header > .logo {
   display: inline-block;
   padding-left: 15px;
 }
