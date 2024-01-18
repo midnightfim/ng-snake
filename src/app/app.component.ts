@@ -1,25 +1,25 @@
-import { Component } from '@angular/core';
-import { BestScoreManager } from './app.storage.service';
-import { CONTROLS, COLORS, BOARD_SIZE, GAME_MODES } from './app.constants';
+import {Component, DestroyRef, inject, OnInit} from '@angular/core';
+import {BestScoreManager} from './app.storage.service';
+import {BOARD_SIZE, COLORS, CONTROLS, GameModesEnum} from './app.constants';
+import {fromEvent} from "rxjs";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'ngx-snake',
+  selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
-  host: {
-    '(document:keydown)': 'handleKeyboardEvents($event)'
-  }
+  styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
+  private readonly destroy: DestroyRef = inject(DestroyRef);
+
   private interval: number;
   private tempDirection: number;
-  private default_mode = 'classic';
+  private default_mode = GameModesEnum.CLASSIC;
   private isGameOver = false;
 
-  public all_modes = GAME_MODES;
-  public getKeys = Object.keys;
-  public board = [];
-  public obstacles = [];
+  public GameModesEnum = GameModesEnum;
+  public board: boolean[][] = [];
+  public obstacles: {x: number, y: number}[] = [];
   public score = 0;
   public showMenuChecker = false;
   public gameStarted = false;
@@ -43,8 +43,16 @@ export class AppComponent {
 
   constructor(
     private bestScoreService: BestScoreManager
-  ) {
+  ) {}
+
+  ngOnInit(): void {
     this.setBoard();
+
+    fromEvent<KeyboardEvent>(document, 'keydown').pipe(
+      takeUntilDestroyed(this.destroy)
+    ).subscribe(($event: KeyboardEvent) => {
+      this.handleKeyboardEvents($event)
+    })
   }
 
   handleKeyboardEvents(e: KeyboardEvent) {
@@ -68,7 +76,7 @@ export class AppComponent {
       return COLORS.HEAD;
     } else if (this.board[col][row] === true) {
       return COLORS.BODY;
-    } else if (this.default_mode === 'obstacles' && this.checkObstacles(row, col)) {
+    } else if (this.default_mode === GameModesEnum.OBSTACLES && this.checkObstacles(row, col)) {
       return COLORS.OBSTACLE;
     }
 
@@ -79,11 +87,11 @@ export class AppComponent {
     let newHead = this.repositionHead();
     let me = this;
 
-    if (this.default_mode === 'classic' && this.boardCollision(newHead)) {
+    if (this.default_mode === GameModesEnum.CLASSIC && this.boardCollision(newHead)) {
       return this.gameOver();
-    } else if (this.default_mode === 'no_walls') {
+    } else if (this.default_mode === GameModesEnum.NO_WALLS) {
       this.noWallsTransition(newHead);
-    } else if (this.default_mode === 'obstacles') {
+    } else if (this.default_mode === GameModesEnum.OBSTACLES) {
       this.noWallsTransition(newHead);
       if (this.obstacleCollision(newHead)) {
         return this.gameOver();
@@ -96,7 +104,7 @@ export class AppComponent {
       this.eatFruit();
     }
 
-    let oldTail = this.snake.parts.pop();
+    let oldTail = this.snake.parts.pop() as { x: number, y: number };
     this.board[oldTail.y][oldTail.x] = false;
 
     this.snake.parts.unshift(newHead);
@@ -153,7 +161,7 @@ export class AppComponent {
     });
   }
 
-  checkObstacles(x, y): boolean {
+  checkObstacles(x: number, y: number): boolean {
     let res = false;
 
     this.obstacles.forEach((val) => {
@@ -174,6 +182,7 @@ export class AppComponent {
   }
 
   selfCollision(part: any): boolean {
+    console.log(this.board[part.y][part.x]);
     return this.board[part.y][part.x] === true;
   }
 
@@ -245,8 +254,9 @@ export class AppComponent {
     this.showMenuChecker = !this.showMenuChecker;
   }
 
-  newGame(mode: string): void {
-    this.default_mode = mode || 'classic';
+  newGame(mode: GameModesEnum): void {
+    this.default_mode = mode || GameModesEnum.CLASSIC;
+    console.log(this.default_mode);
     this.showMenuChecker = false;
     this.newBestScore = false;
     this.gameStarted = true;
@@ -263,7 +273,7 @@ export class AppComponent {
       this.snake.parts.push({ x: 8 + i, y: 8 });
     }
 
-    if (mode === 'obstacles') {
+    if (mode === GameModesEnum.OBSTACLES) {
       this.obstacles = [];
       let j = 1;
       do {

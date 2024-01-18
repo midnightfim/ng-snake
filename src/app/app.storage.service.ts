@@ -20,6 +20,6 @@ export class BestScoreManager {
   }
 
   private parse() {
-    return JSON.parse(localStorage.getItem(this.ngxSnake));
+    return JSON.parse(localStorage.getItem(this.ngxSnake) as string);
   }
 }

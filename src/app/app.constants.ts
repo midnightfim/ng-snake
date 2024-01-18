@@ -16,8 +16,8 @@ export const COLORS = {
   OBSTACLE: '#383522'
 };
 
-export const GAME_MODES = {
-  classic: 'Classic',
-  no_walls: 'No Walls',
-  obstacles: 'Obstacles'
+export enum GameModesEnum {
+  CLASSIC = 'Classic',
+  NO_WALLS = 'No Walls',
+  OBSTACLES = 'Obstacles'
 };

@@ -12,6 +12,8 @@
   <div class="start-button" [ngClass]="{'disable-clicks': gameStarted}" (click)="showMenu()">Start Game</div>
   <div class="new-game-menu" *ngIf="showMenuChecker">
     <span class="new-game-menu-label">Select Mode</span>
-    <div class="start-button new-game-button" (click)="newGame(mode)" *ngFor="let mode of getKeys(all_modes)">{{all_modes[mode]}}</div>
+    <div class="start-button new-game-button" (click)="newGame(mode.value)" *ngFor="let mode of GameModesEnum | keyvalue">
+      {{mode.value}}
+    </div>
   </div>
 </div>

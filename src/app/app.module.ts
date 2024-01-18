@@ -3,13 +3,15 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { BestScoreManager } from './app.storage.service';
+import {CommonModule} from "@angular/common";
 
 @NgModule({
   declarations: [
     AppComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    CommonModule
   ],
   providers: [
     BestScoreManager
