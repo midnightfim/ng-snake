@@ -1,8 +1,8 @@
 import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { BestScoreManager } from './app.storage.service';
-import { BOARD_SIZE, COLORS, CONTROLS, GameModesEnum } from './app.constants';
 import { fromEvent } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { BOARD_SIZE, CellColorsEnum, ControlsEnum, GameModesEnum } from './common';
 
 @Component({
   selector: 'app-root',
@@ -27,7 +27,7 @@ export class AppComponent implements OnInit {
   public best_score = this.bestScoreService.retrieve();
 
   private snake = {
-    direction: CONTROLS.LEFT,
+    direction: ControlsEnum.LEFT,
     parts: [
       {
         x: -1,
@@ -57,31 +57,31 @@ export class AppComponent implements OnInit {
   }
 
   handleKeyboardEvents(e: KeyboardEvent) {
-    if (e.keyCode === CONTROLS.LEFT && this.snake.direction !== CONTROLS.RIGHT) {
-      this.tempDirection = CONTROLS.LEFT;
-    } else if (e.keyCode === CONTROLS.UP && this.snake.direction !== CONTROLS.DOWN) {
-      this.tempDirection = CONTROLS.UP;
-    } else if (e.keyCode === CONTROLS.RIGHT && this.snake.direction !== CONTROLS.LEFT) {
-      this.tempDirection = CONTROLS.RIGHT;
-    } else if (e.keyCode === CONTROLS.DOWN && this.snake.direction !== CONTROLS.UP) {
-      this.tempDirection = CONTROLS.DOWN;
+    if (e.keyCode === ControlsEnum.LEFT && this.snake.direction !== ControlsEnum.RIGHT) {
+      this.tempDirection = ControlsEnum.LEFT;
+    } else if (e.keyCode === ControlsEnum.UP && this.snake.direction !== ControlsEnum.DOWN) {
+      this.tempDirection = ControlsEnum.UP;
+    } else if (e.keyCode === ControlsEnum.RIGHT && this.snake.direction !== ControlsEnum.LEFT) {
+      this.tempDirection = ControlsEnum.RIGHT;
+    } else if (e.keyCode === ControlsEnum.DOWN && this.snake.direction !== ControlsEnum.UP) {
+      this.tempDirection = ControlsEnum.DOWN;
     }
   }
 
-  setColors(col: number, row: number): string {
+  setCellColor(colIndex: number, rowIndex: number): string {
     if (this.isGameOver) {
-      return COLORS.GAME_OVER;
-    } else if (this.fruit.x === row && this.fruit.y === col) {
-      return COLORS.FRUIT;
-    } else if (this.snake.parts[0].x === row && this.snake.parts[0].y === col) {
-      return COLORS.HEAD;
-    } else if (this.board[col][row] === true) {
-      return COLORS.BODY;
-    } else if (this.default_mode === GameModesEnum.OBSTACLES && this.checkObstacles(row, col)) {
-      return COLORS.OBSTACLE;
+      return CellColorsEnum.GAME_OVER;
+    } else if (this.fruit.x === rowIndex && this.fruit.y === colIndex) {
+      return CellColorsEnum.FRUIT;
+    } else if (this.snake.parts[0].x === rowIndex && this.snake.parts[0].y === colIndex) {
+      return CellColorsEnum.HEAD;
+    } else if (this.board[colIndex][rowIndex]) {
+      return CellColorsEnum.BODY;
+    } else if (this.default_mode === GameModesEnum.OBSTACLES && this.checkObstacles(rowIndex, colIndex)) {
+      return CellColorsEnum.OBSTACLE;
     }
 
-    return COLORS.BOARD;
+    return CellColorsEnum.BOARD;
   };
 
   updatePositions(): void {
@@ -121,13 +121,13 @@ export class AppComponent implements OnInit {
   repositionHead(): any {
     let newHead = Object.assign({}, this.snake.parts[0]);
 
-    if (this.tempDirection === CONTROLS.LEFT) {
+    if (this.tempDirection === ControlsEnum.LEFT) {
       newHead.x -= 1;
-    } else if (this.tempDirection === CONTROLS.RIGHT) {
+    } else if (this.tempDirection === ControlsEnum.RIGHT) {
       newHead.x += 1;
-    } else if (this.tempDirection === CONTROLS.UP) {
+    } else if (this.tempDirection === ControlsEnum.UP) {
       newHead.y -= 1;
-    } else if (this.tempDirection === CONTROLS.DOWN) {
+    } else if (this.tempDirection === ControlsEnum.DOWN) {
       newHead.y += 1;
     }
 
@@ -183,7 +183,6 @@ export class AppComponent implements OnInit {
   }
 
   selfCollision(part: any): boolean {
-    console.log(this.board[part.y][part.x]);
     return this.board[part.y][part.x] === true;
   }
 
@@ -257,16 +256,15 @@ export class AppComponent implements OnInit {
 
   newGame(mode: GameModesEnum): void {
     this.default_mode = mode || GameModesEnum.CLASSIC;
-    console.log(this.default_mode);
     this.showMenuChecker = false;
     this.newBestScore = false;
     this.gameStarted = true;
     this.score = 0;
-    this.tempDirection = CONTROLS.LEFT;
+    this.tempDirection = ControlsEnum.LEFT;
     this.isGameOver = false;
     this.interval = 150;
     this.snake = {
-      direction: CONTROLS.LEFT,
+      direction: ControlsEnum.LEFT,
       parts: []
     };
 
