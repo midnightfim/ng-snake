@@ -2,8 +2,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
-import { BestScoreManager } from './app.storage.service';
 import { CommonModule } from '@angular/common';
+import { SnakeModule } from './snake/snake.module';
 
 @NgModule({
   declarations: [
@@ -11,11 +11,10 @@ import { CommonModule } from '@angular/common';
   ],
   imports: [
     BrowserModule,
-    CommonModule
+    CommonModule,
+    SnakeModule
   ],
-  providers: [
-    BestScoreManager
-  ],
+  providers: [],
   bootstrap: [
     AppComponent
   ]

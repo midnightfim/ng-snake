@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 
-@Injectable()
-export class BestScoreManager {
 
-  private ngxSnake = 'ngx_snake';
+@Injectable({
+  providedIn: 'root',
+})
+export class StorageService {
+  private ngSnake = 'ng_snake';
 
   public store(score: number) {
-    localStorage.setItem(this.ngxSnake, JSON.stringify({ 'best_score': score }));
+    localStorage.setItem(this.ngSnake, JSON.stringify({ 'best_score': score }));
   }
 
   public retrieve() {
@@ -20,6 +22,6 @@ export class BestScoreManager {
   }
 
   private parse() {
-    return JSON.parse(localStorage.getItem(this.ngxSnake) as string);
+    return JSON.parse(localStorage.getItem(this.ngSnake) as string);
   }
 }
