@@ -1,29 +1,37 @@
-import { Component, DestroyRef, inject } from '@angular/core';
-import { BOARD_SIZE, CellColorsEnum, ControlsEnum, GameModesEnum, StorageService } from '../common';
-import { fromEvent } from 'rxjs';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { BOARD_SIZE, CellColorsEnum, ControlsEnum, GameModesEnum } from '../common';
+import { combineLatest, fromEvent, take } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { select, Store } from '@ngrx/store';
+import {
+  AppState,
+  GetBestScore,
+  selectSnakeBestScore,
+  selectSnakeCurrentScore,
+  SetBestScore, SetCurrentScore
+} from '../store';
 
 @Component({
   selector: 'app-snake',
   templateUrl: './snake.component.html',
   styleUrl: './snake.component.scss'
 })
-export class SnakeComponent {
+export class SnakeComponent implements OnInit {
   private readonly destroy: DestroyRef = inject(DestroyRef);
-
   private interval: number;
   private tempDirection: number;
   private default_mode = GameModesEnum.CLASSIC;
   private isGameOver = false;
 
-  public GameModesEnum = GameModesEnum;
-  public board: boolean[][] = [];
-  public obstacles: { x: number, y: number }[] = [];
-  public score = 0;
-  public showMenuChecker = false;
-  public gameStarted = false;
-  public newBestScore = false;
-  public best_score = this.bestScoreService.retrieve();
+  score = this.store.pipe(select(selectSnakeCurrentScore), takeUntilDestroyed(this.destroy));
+  bestScore = this.store.pipe(select(selectSnakeBestScore), takeUntilDestroyed(this.destroy));
+
+  GameModesEnum = GameModesEnum;
+  board: boolean[][] = [];
+  obstacles: { x: number, y: number }[] = [];
+  showMenuChecker = false;
+  gameStarted = false;
+  showNewBestScoreAnimation = false;
 
   private snake = {
     direction: ControlsEnum.LEFT,
@@ -41,11 +49,13 @@ export class SnakeComponent {
   };
 
   constructor(
-    private bestScoreService: StorageService
-  ) {}
+    private store: Store<AppState>
+  ) {
+  }
 
   ngOnInit(): void {
-    this.setBoard();
+    this.resetBoard();
+    this.store.dispatch(new GetBestScore());
 
     fromEvent<KeyboardEvent>(document, 'keydown').pipe(
       takeUntilDestroyed(this.destroy)
@@ -181,7 +191,7 @@ export class SnakeComponent {
   }
 
   selfCollision(part: any): boolean {
-    return this.board[part.y][part.x] === true;
+    return this.board[part.y][part.x];
   }
 
   fruitCollision(part: any): boolean {
@@ -203,41 +213,45 @@ export class SnakeComponent {
   }
 
   eatFruit(): void {
-    this.score++;
+    combineLatest([this.score, this.bestScore])
+      .pipe(
+        takeUntilDestroyed(this.destroy),
+        take(1)
+      ).subscribe(([score, bestScore]) => {
+      this.store.dispatch(new SetCurrentScore(++score));
+      if (score % 5 === 0) {
+        this.interval -= 15;
+      }
+      if (score > bestScore) {
+        this.store.dispatch(new SetBestScore(score));
+        this.showNewBestScoreAnimation = true;
+      }
+    });
 
     let tail = Object.assign({}, this.snake.parts[this.snake.parts.length - 1]);
 
     this.snake.parts.push(tail);
     this.resetFruit();
-
-    if (this.score % 5 === 0) {
-      this.interval -= 15;
-    }
   }
 
   gameOver(): void {
     this.isGameOver = true;
     this.gameStarted = false;
     let me = this;
-
-    if (this.score > this.best_score) {
-      this.bestScoreService.store(this.score);
-      this.best_score = this.score;
-      this.newBestScore = true;
-    }
+    this.showNewBestScoreAnimation = true;
 
     setTimeout(() => {
       me.isGameOver = false;
     }, 500);
 
-    this.setBoard();
+    this.resetBoard();
   }
 
   randomNumber(): any {
     return Math.floor(Math.random() * BOARD_SIZE);
   }
 
-  setBoard(): void {
+  resetBoard(): void {
     this.board = [];
 
     for (let i = 0; i < BOARD_SIZE; i++) {
@@ -255,9 +269,9 @@ export class SnakeComponent {
   newGame(mode: GameModesEnum): void {
     this.default_mode = mode || GameModesEnum.CLASSIC;
     this.showMenuChecker = false;
-    this.newBestScore = false;
+    this.showNewBestScoreAnimation = false;
     this.gameStarted = true;
-    this.score = 0;
+    this.store.dispatch(new SetCurrentScore(0));
     this.tempDirection = ControlsEnum.LEFT;
     this.isGameOver = false;
     this.interval = 150;

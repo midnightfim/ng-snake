@@ -1,31 +1,3 @@
-.game-header {
-  color: #fff;
-  padding: 5px 15px 5px 0px;
-  position: relative;
-}
-
-.game-header > .score-block {
-  display: inline-block;
-}
-
-.score-block > .score {
-  position: absolute;
-  right: 8px;
-  top: -5px;
-}
-
-.score-block > .best-score {
-  position: absolute;
-  right: 8px;
-  margin-top: 5px;
-  font-size: 12px;
-}
-
-.game-header > .logo {
-  display: inline-block;
-  padding-left: 15px;
-}
-
 .game-container {
   width: 468px;
   position: relative;
@@ -83,10 +55,6 @@
   margin-bottom: 13px;
   display: block;
   color: #fff;
-}
-
-.new-best-score {
-  animation: glow .5s infinite alternate;
 }
 
 @keyframes glow {

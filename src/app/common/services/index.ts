@@ -1,1 +1,1 @@
-export * from './storage/storage.service'
+export * from './snake-score/snake-score.service';
