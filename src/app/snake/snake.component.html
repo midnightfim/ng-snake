@@ -1,0 +1,18 @@
+<div class="game-container">
+  <app-snake-header
+    [showNewBestScoreAnimation]="showNewBestScoreAnimation"
+  ></app-snake-header>
+  <div class="row" *ngFor="let column of board; let i = index;">
+    <div class="column" [ngStyle]="{'background-color': setCellColor(i, j)}"
+         *ngFor="let row of column; let j = index"></div>
+  </div>
+  <div class="start-button" [ngClass]="{'disable-clicks': gameStarted}" (click)="showMenu()">Start Game</div>
+  <div class="new-game-menu" *ngIf="showMenuChecker">
+    <span class="new-game-menu-label">Select Mode</span>
+    <div class="start-button new-game-button" (click)="newGame(mode.value)"
+         *ngFor="let mode of GameModesEnum | keyvalue">
+      {{ mode.value }}
+    </div>
+  </div>
+</div>
+

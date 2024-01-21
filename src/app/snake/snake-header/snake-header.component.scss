@@ -1,0 +1,33 @@
+.snake-header {
+  color: #fff;
+  padding: 5px 15px 5px 0;
+  position: relative;
+
+  .score-block {
+    display: inline-block;
+
+    .current-score {
+      position: absolute;
+      right: 8px;
+      top: -5px;
+    }
+
+    .best-score {
+      position: absolute;
+      right: 8px;
+      margin-top: 5px;
+      font-size: 12px;
+    }
+  }
+
+  .score-block .new-best-score-animation {
+    .current-score, .best-score {
+      animation: glow .5s infinite alternate;
+    }
+  }
+
+  .snake-title {
+    display: inline-block;
+    padding-left: 15px;
+  }
+}
